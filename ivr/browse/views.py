@@ -36,17 +36,18 @@ def listen_content(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
 
    digits = request.POST.get('Digits')
-   entry = Content.objects.get(id=request.GET['content'])
 
    try:
-      content = Content.objects.get(digits=digits)
+      entry = Content.objects.get(id=digits)
 
    except Content.DoesNotExist:
       vr.say('Please select Content entries 1, 2, or 3.')
       vr.redirect(reverse('browse-content'))
 
    else:
-      vr.say('{entry.body}')
+      
+      vr.say(f'{entry.body}')
+      vr.say('Info message, End of Content, Returning to Browse Content Menu')
       vr.redirect(reverse('browse-content'))
 
       return HttpResponse(str(vr), content_type='text/xml')
