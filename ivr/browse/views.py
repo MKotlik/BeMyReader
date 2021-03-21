@@ -7,6 +7,41 @@ from twilio.twiml.voice_response import VoiceResponse
 from .models import Content
 
 @csrf_exempt
+def welcome(request: HttpRequest) -> HttpResponse:
+   vr = VoiceResponse()
+   with vr.gather(
+      num_digits=1, action=reverse('menu'), finish_on_key='#',
+   ) as gather:
+      gather.say(message="Welcome to the Main Menu.   " +
+         "Please make a selection, then press #.  " +
+         "Press 1 to browse content.   " +
+         "Press 2 to request content.   " +
+         "Press 3 to browse requests.   ", loop=3)
+   
+   vr.say('We did not receive your selection')
+   vr.redirect('')
+
+   return HttpResponse(str(vr), content_type='text/xml')
+
+
+@csrf_exempt
+def menu(request: HttpRequest) -> HttpResponse:
+   
+   selected_option = request.POST.get('Digits')
+   option_actions = {'1': 'browse-content',
+                     '2': 'request-content',
+                     '3': 'browse-requests'}
+
+   if selected_option in option_actions:
+      vr = VoiceResponse()
+      vr.redirect(reverse(option_actions[selected_option]))
+      return HttpResponse(str(vr), content_type='text/xml')
+
+   vr.redirect('welcome')
+   return HttpResponse(str(vr), content_type='text/xml') 
+
+
+@csrf_exempt
 def browse_content(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
    vr.say('Welcome to the Browse Content Menu')
@@ -51,3 +86,23 @@ def listen_content(request: HttpRequest) -> HttpResponse:
       vr.redirect(reverse('browse-content'))
 
       return HttpResponse(str(vr), content_type='text/xml')
+
+@csrf_exempt
+def browse_requests(request: HttpRequest) -> HttpResponse:
+   vr = VoiceResponse()
+   vr.say('Welcome to the Browse Requests Menu')
+
+   vr.say('Sorry, under construction')
+   vr.redirect('')
+
+   return HttpResponse(str(vr), content_type='text/xml')
+
+@csrf_exempt
+def make_request(request: HttpRequest) -> HttpResponse:
+   vr = VoiceResponse()
+   vr.say('Welcome to the Make Request Menu')
+
+   vr.say('Sorry, under construction')
+   vr.redirect('')
+
+   return HttpResponse(str(vr), content_type='text/xml')
