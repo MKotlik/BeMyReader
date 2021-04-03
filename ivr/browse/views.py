@@ -9,14 +9,17 @@ from .models import Content
 @csrf_exempt
 def welcome(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
+   vr.say('Welcome to Be My Reader')
+
    with vr.gather(
-      num_digits=1, action=reverse('menu'), finish_on_key='#',
+       action=reverse('menu'),
+       finish_on_key='#',
+       timeout=10,
    ) as gather:
-      gather.say(message="Welcome to the Main Menu.   " +
-         "Please make a selection, then press #.  " +
-         "Press 1 to browse content.   " +
-         "Press 2 to request content.   " +
-         "Press 3 to browse requests.   ", loop=3)
+      gather.say('Please make a selection, then press #.   ')
+      gather.say('Press 1 to browse content.   ')
+      gather.say('Press 2 to request content.   ')
+      gather.say('Press 3 to browse requests.   ')
    
    vr.say('We did not receive your selection')
    vr.redirect('')
@@ -27,16 +30,20 @@ def welcome(request: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def menu(request: HttpRequest) -> HttpResponse:
    
+   vr = VoiceResponse()
+
    selected_option = request.POST.get('Digits')
    option_actions = {'1': 'browse-content',
                      '2': 'request-content',
                      '3': 'browse-requests'}
 
    if selected_option in option_actions:
-      vr = VoiceResponse()
+      #vr = VoiceResponse()
       vr.redirect(reverse(option_actions[selected_option]))
       return HttpResponse(str(vr), content_type='text/xml')
 
+   
+   vr.say('Invalid Entry  ')
    vr.redirect('welcome')
    return HttpResponse(str(vr), content_type='text/xml') 
 
@@ -49,7 +56,7 @@ def browse_content(request: HttpRequest) -> HttpResponse:
    with vr.gather(
        action=reverse('listen-content'),
        finish_on_key='#',
-       timeout=20,
+       timeout=10,
    ) as gather:
        gather.say('Please choose which content to listen to, then press #')
        contents = (
@@ -76,7 +83,7 @@ def listen_content(request: HttpRequest) -> HttpResponse:
       entry = Content.objects.get(id=digits)
 
    except Content.DoesNotExist:
-      vr.say('Please select Content entries 1, 2, or 3.')
+      vr.say('Invalid content.  ')
       vr.redirect(reverse('browse-content'))
 
    else:
@@ -88,21 +95,21 @@ def listen_content(request: HttpRequest) -> HttpResponse:
       return HttpResponse(str(vr), content_type='text/xml')
 
 @csrf_exempt
+def request_content(request: HttpRequest) -> HttpResponse:
+   vr = VoiceResponse()
+   vr.say('Welcome to the Make Request Menu')
+
+   vr.say('Sorry, under construction')
+   vr.redirect(reverse('welcome'))
+
+   return HttpResponse(str(vr), content_type='text/xml')
+
+@csrf_exempt
 def browse_requests(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
    vr.say('Welcome to the Browse Requests Menu')
 
    vr.say('Sorry, under construction')
-   vr.redirect('')
-
-   return HttpResponse(str(vr), content_type='text/xml')
-
-@csrf_exempt
-def make_request(request: HttpRequest) -> HttpResponse:
-   vr = VoiceResponse()
-   vr.say('Welcome to the Make Request Menu')
-
-   vr.say('Sorry, under construction')
-   vr.redirect('')
+   vr.redirect(reverse('welcome'))
 
    return HttpResponse(str(vr), content_type='text/xml')

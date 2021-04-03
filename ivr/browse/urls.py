@@ -9,5 +9,5 @@ urlpatterns = [
    path('browse-content', views.browse_content, name='browse-content'),
    path('listen-content', views.listen_content, name='listen-content'),
    path('browse-requests', views.browse_requests, name='browse-requests'),
-   path('make-request', views.make_request, name='make-request'),
+   path('request-content', views.request_content, name='request-content'),
 ]
