@@ -17,9 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
 from listen.urls import urlpatterns as listen_urlpatterns
+from browse.urls import urlpatterns as browse_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('listen/', include(listen_urlpatterns)),
+    path('browse/', include(browse_urlpatterns)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
