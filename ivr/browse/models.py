@@ -12,4 +12,4 @@ class Content(models.Model):
 	# FIXME: For requestorShould we use django-phonenumber-field
 	head = models.TextField()
 	body = models.TextField()
-	digits = models.PositiveSmallIntegerField(unique=True)
+	idx = models.PositiveSmallIntegerField(null=True, unique=True)

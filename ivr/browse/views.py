@@ -57,10 +57,12 @@ def browse_content(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
    vr.say('Welcome to the Browse Content Menu')
 
-   vr.say('Press 1 through 3 to select content   ')
+   vr.say('Start of instructions   ')
+   vr.say('Press 1   through 3 to select content   ')
    vr.say('Press 4 to browse previous three entries   ')
    vr.say('Press 6 to browse next three entries   ')
    vr.say('Press # after your selection   ')
+   vr.say('End of instructions   ')
 
    with vr.gather(
        action=reverse('listen-content'),
@@ -70,11 +72,11 @@ def browse_content(request: HttpRequest) -> HttpResponse:
        #gather.say('Please choose which content to listen to, then press #')
        contents = (
            Content.objects
-           .filter(digits__isnull=False, digits__gte=index+1, digits__lte=index+3)
-           .order_by('digits')
+           .filter(id__isnull=False, id__gte=index+1, id__lte=index+3)
+           .order_by('id')
        )
        for content in contents:
-           gather.say(f'For {content.head} press {content.digits-index}')
+           gather.say(f'For {content.head} press {content.id-index}')
 
    vr.say('We did not receive your selection')
    vr.redirect('')
@@ -89,7 +91,7 @@ def listen_content(request: HttpRequest) -> HttpResponse:
    digits = request.POST.get('Digits')
 
    try:
-      entry = Content.objects.get(id=digits)
+      entry = Content.objects.get(id=int(digits)+index)
 
    except Content.DoesNotExist:
       vr.say('Invalid content.  ')
