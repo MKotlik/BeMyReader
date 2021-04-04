@@ -6,6 +6,9 @@ from twilio.twiml.voice_response import VoiceResponse
 
 from .models import Content
 
+## Global variables
+index = 0;
+
 @csrf_exempt
 def welcome(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
@@ -31,6 +34,7 @@ def welcome(request: HttpRequest) -> HttpResponse:
 def menu(request: HttpRequest) -> HttpResponse:
    
    vr = VoiceResponse()
+   vr.say('Standby while we route your connection  ')
 
    selected_option = request.POST.get('Digits')
    option_actions = {'1': 'browse-content',
@@ -44,7 +48,7 @@ def menu(request: HttpRequest) -> HttpResponse:
 
    
    vr.say('Invalid Entry  ')
-   vr.redirect('welcome')
+   vr.redirect(reverse('welcome'))
    return HttpResponse(str(vr), content_type='text/xml') 
 
 
@@ -53,29 +57,34 @@ def browse_content(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
    vr.say('Welcome to the Browse Content Menu')
 
+   vr.say('Press 1 through 3 to select content   ')
+   vr.say('Press 4 to browse previous three entries   ')
+   vr.say('Press 6 to browse next three entries   ')
+   vr.say('Press # after your selection   ')
+
    with vr.gather(
        action=reverse('listen-content'),
        finish_on_key='#',
        timeout=10,
    ) as gather:
-       gather.say('Please choose which content to listen to, then press #')
+       #gather.say('Please choose which content to listen to, then press #')
        contents = (
            Content.objects
-           .filter(digits__isnull=False) # Todo: Filter for only the three entries to use
+           .filter(digits__isnull=False, digits__gte=index+1, digits__lte=index+3)
            .order_by('digits')
        )
        for content in contents:
-           gather.say(f'For {content.head} press {content.digits}')
+           gather.say(f'For {content.head} press {content.digits-index}')
 
    vr.say('We did not receive your selection')
    vr.redirect('')
 
    return HttpResponse(str(vr), content_type='text/xml')
 
-
 @csrf_exempt
 def listen_content(request: HttpRequest) -> HttpResponse:
    vr = VoiceResponse()
+   vr.say('Retrieving content   ')
 
    digits = request.POST.get('Digits')
 
@@ -92,7 +101,7 @@ def listen_content(request: HttpRequest) -> HttpResponse:
       vr.say('Info message, End of Content, Returning to Browse Content Menu')
       vr.redirect(reverse('browse-content'))
 
-      return HttpResponse(str(vr), content_type='text/xml')
+   return HttpResponse(str(vr), content_type='text/xml')
 
 @csrf_exempt
 def request_content(request: HttpRequest) -> HttpResponse:
