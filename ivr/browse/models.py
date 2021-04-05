@@ -46,4 +46,4 @@ class Title(models.Model):
     genre = models.CharField("genre", max_length=2, choices=GENRES, null=True)
 	# auto generated
 	# id is auto generated for all models, I'm just using it for filepath
-    files = models.FilePathField(null=True)
+    files = models.CharField("file path", max_length=200)

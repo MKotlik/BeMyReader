@@ -37,7 +37,7 @@ def welcome(request: HttpRequest) -> HttpResponse:
 def menu(request: HttpRequest) -> HttpResponse:
 
     vr = VoiceResponse()
-    vr.say('Standby while we route your connection')
+    #vr.say('Standby while we route your connection')
 
     selected_option = request.POST.get('Digits')
     option_actions = {'1': 'browse-content',
@@ -72,9 +72,8 @@ def browse_content(request: HttpRequest) -> HttpResponse:
        #gather.say('Please choose which content to listen to, then press #')
         contents = (Title.objects.order_by('id'))
             #.filter(id__isnull=False, id__gte=index+1, id__lte=index+3)
-
         for count, content in enumerate(contents):
-            gather.say('For ' + str(content.name) + ' press '+ str(count))
+            gather.say('For ' + content.name + ' press '+ str(count))
     vr.say('We did not receive your selection')
     vr.redirect('')
     return HttpResponse(str(vr), content_type='text/xml')

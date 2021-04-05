@@ -6,14 +6,14 @@ Title.objects.create(
     name="count zero",
     author="william gibson",
     genre='LI',
-    files=models.FilePathField(path=settings.MEDIA_ROOT+'/0/')
+    files=settings.MEDIA_URL+'0/'
 )
 
 Title.objects.create(
     name="mona lisa overdrive",
     author="william gibson",
     genre="LI",
-    files=models.FilePathField(path=settings.MEDIA_ROOT+'/1/')
+    files=settings.MEDIA_URL+'1/'
 )
 
 
