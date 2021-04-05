@@ -6,12 +6,10 @@ from twilio.twiml.voice_response import VoiceResponse
 from browse.models import *
 
 ## Global variables
-index = 0
 CUR_URL = "https://a211ee428d6c.ngrok.io"
 
 @csrf_exempt
 def welcome(request: HttpRequest) -> HttpResponse:
-
     vr = VoiceResponse()
     vr.say('Welcome to Be My Reader')
     print(request)
@@ -32,26 +30,19 @@ def welcome(request: HttpRequest) -> HttpResponse:
     vr.redirect('')
     return HttpResponse(str(vr), content_type='text/xml')
 
-
 @csrf_exempt
 def menu(request: HttpRequest) -> HttpResponse:
-
     vr = VoiceResponse()
-    #vr.say('Standby while we route your connection')
-
     selected_option = request.POST.get('Digits')
     option_actions = {'1': 'browse-content',
                       '2': 'request-content',
                       '3': 'browse-requests'}
-
     if selected_option in option_actions:
-      #vr = VoiceResponse()
         vr.redirect(reverse(option_actions[selected_option]))
         return HttpResponse(str(vr), content_type='text/xml')
     vr.say('Invalid Entry  ')
     vr.redirect(reverse('welcome'))
     return HttpResponse(str(vr), content_type='text/xml')
-
 
 @csrf_exempt
 def browse_content(request: HttpRequest) -> HttpResponse:
@@ -69,9 +60,7 @@ def browse_content(request: HttpRequest) -> HttpResponse:
             finish_on_key='#',
             timeout=10,
     ) as gather:
-       #gather.say('Please choose which content to listen to, then press #')
-        contents = (Title.objects.order_by('id'))
-            #.filter(id__isnull=False, id__gte=index+1, id__lte=index+3)
+        contents = (Title.objects.order_by('id').filter(id__isnull=False))
         for count, content in enumerate(contents):
             gather.say('For ' + content.name + ' press '+ str(count))
     vr.say('We did not receive your selection')
@@ -80,37 +69,12 @@ def browse_content(request: HttpRequest) -> HttpResponse:
 
 @csrf_exempt
 def listen(request: HttpRequest) -> HttpResponse:
-    """
-    contents = (
-        Title.objects
-        .filter(id__isnull=False, id__gte=index+1, id__lte=index+3)
-        .order_by('id')
-    )
-    """
+    # contents = (Title.objects.order_by('id').filter(id__isnull=False)
     file_url = CUR_URL + settings.MEDIA_URL + request.GET.get('f', '')
     vr = VoiceResponse()
     vr.say('Hello, please wait just a moment while the file is loaded.')
     vr.play(file_url)
     return HttpResponse(str(vr), content_type='text/xml')
-
-"""
-@csrf_exempt
-def listen_content(request: HttpRequest) -> HttpResponse:
-    vr = VoiceResponse()
-    vr.say('Retrieving content   ')
-    digits = request.POST.get('Digits')
-
-    try:
-        entry = Title.objects.get(id=int(digits)+index)
-    except Title.DoesNotExist:
-        vr.say('Invalid content.  ')
-        vr.redirect(reverse('browse-content'))
-    else:
-        vr.say(f'{entry.body}')
-        vr.say('Info message, End of Content, Returning to Browse Content Menu')
-        vr.redirect(reverse('browse-content'))
-    return HttpResponse(str(vr), content_type='text/xml')
-"""
 
 @csrf_exempt
 def request_content(request: HttpRequest) -> HttpResponse:

@@ -2,19 +2,7 @@ import os
 from django.db import models
 from django.conf import settings
 
-"""
-class Content(models.Model):
-    class Meta:
-        verbose_name = 'Content'
-        verbose_name_plural = 'Contents'
 
-    requester = models.CharField(max_length=10)
-    creator = models.CharField(max_length=10)
-    # For requestor should we use django-phonenumber-field?
-    head = models.TextField()
-    body = models.TextField()
-    idx = models.PositiveSmallIntegerField(null=True, unique=True)
-"""
 """
 class User(models.Model):
     class Meta:
@@ -45,5 +33,4 @@ class Title(models.Model):
     # reader = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     genre = models.CharField("genre", max_length=2, choices=GENRES, null=True)
 	# auto generated
-	# id is auto generated for all models, I'm just using it for filepath
     files = models.CharField("file path", max_length=200)
