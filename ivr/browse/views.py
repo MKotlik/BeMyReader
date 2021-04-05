@@ -7,7 +7,7 @@ from browse.models import *
 
 ## Global variables
 index = 0
-CUR_URL = "https://2a59b4a96b5f.ngrok.io"
+CUR_URL = "https://a211ee428d6c.ngrok.io"
 
 @csrf_exempt
 def welcome(request: HttpRequest) -> HttpResponse:
@@ -65,7 +65,7 @@ def browse_content(request: HttpRequest) -> HttpResponse:
     vr.say('Press 6 to hear the next three entries')
 
     with vr.gather(
-            action=vr.play(file_path),
+            action=reverse('listen'),
             finish_on_key='#',
             timeout=10,
     ) as gather:
