@@ -46,6 +46,8 @@ def browse_content(request: HttpRequest) -> HttpResponse:
                 gather.say('4, to hear the previous three entries')
                 gather.pause()
                 gather.say('6, to hear the next three entries')
+                gather.pause()
+                gather.say('9, to return to the main menu')
                 # gather.say('Press 1, 2, or 3 then # to select an entry')
                 # gather.pause()
                 # gather.say('Press 4, then #, to hear the previous three entries')
@@ -64,6 +66,8 @@ def browse_content(request: HttpRequest) -> HttpResponse:
                 gather.say('Press 4, then #, to hear the previous three entries')
                 gather.pause()
                 gather.say('Press 7, then #, to return to the top of the list')
+                gather.pause()
+                gather.say('Press 9, then #, to return to the main menu')
 
             # List the contents
             for count, content in enumerate(contents):
@@ -80,7 +84,10 @@ def browse_content(request: HttpRequest) -> HttpResponse:
             gather.pause()
             gather.say('6 to hear the next three entries')
             if base_index > 0:
+                gather.pause()
                 gather.say('7 to return to the top of the list')
+            gather.pause()
+            gather.say('9, to return to the main menu')
 
         vr.say('We did not receive your selection')
         vr.redirect('')
@@ -108,6 +115,11 @@ def browse_content(request: HttpRequest) -> HttpResponse:
             request.session['listen_id'] = content.id
             request.session['listen_path'] = content.files
             vr.redirect(reverse('listen'))
+            return HttpResponse(str(vr), content_type='text/xml')
+
+        # Return to main menu
+        elif selected_option == '9':
+            vr.redirect(reverse('welcome'))
             return HttpResponse(str(vr), content_type='text/xml')
 
         # Handle invalid option
