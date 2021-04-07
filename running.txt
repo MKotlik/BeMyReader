@@ -1,0 +1,6 @@
+How to run the app:
+cd into ivr
+run: python manage.py runserver
+
+How to start ngrok:
+run: ngrok http 8000

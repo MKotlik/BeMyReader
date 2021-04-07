@@ -6,9 +6,6 @@ from twilio.twiml.voice_response import VoiceResponse
 from browse.models import *
 import os
 
-## Global variables
-CUR_URL = "https://cedbb33691f9.ngrok.io"
-
 @csrf_exempt
 def welcome(request: HttpRequest) -> HttpResponse:
     selected_option = request.POST.get('Digits', None)
@@ -164,6 +161,9 @@ def browse_content(request: HttpRequest) -> HttpResponse:
             vr.redirect(reverse('browse-content'))
             return HttpResponse(str(vr), content_type='text/xml')
 
+
+# TODO - follow this tutorial to implement play/pause
+# https://stackoverflow.com/questions/19880217/twilio-play-pause-resume
 @csrf_exempt
 def listen(request: HttpRequest) -> HttpResponse:
     vr = VoiceResponse()
@@ -182,11 +182,11 @@ def listen(request: HttpRequest) -> HttpResponse:
     first_file = audio_list[0]
 
     file_url = CUR_URL + content_path + first_file
-    # print(file_url)
+    print(file_url)
     
     vr.say('Hello, you are listening to ' + content_name)
     vr.pause(1)
-    vr.say('Please wait just a moment while the file is loaded')
+    vr.say('Please wait a moment while the file is loaded')
     vr.play(file_url)
     return HttpResponse(str(vr), content_type='text/xml')
 
