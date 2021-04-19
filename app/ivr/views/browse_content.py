@@ -23,8 +23,8 @@ def browse_content(request: HttpRequest) -> HttpResponse:
         # Start getting user input at any point in the interaction
         with vr.gather(
                 action=reverse('browse-content'),
-                finish_on_key='#',
-                timeout=10,
+                #finish_on_key='#',
+                timeout=1,
         ) as gather:
 
             # Say the appropriate header message
@@ -39,7 +39,7 @@ def browse_content(request: HttpRequest) -> HttpResponse:
 
             # Say the menu options if top of list
             if base_index == 0:
-                gather.say('Press the number, then # to select an entry')
+                gather.say('Press the number to select an entry')
                 gather.pause()
                 gather.say('1, 2, or 3 to select content to listen to')
                 gather.pause()
