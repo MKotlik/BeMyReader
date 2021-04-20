@@ -20,16 +20,16 @@ def welcome(request: HttpRequest) -> HttpResponse:
         vr.say('Welcome to Be My Reader')
         with vr.gather(
                 action=reverse('welcome'),
-                finish_on_key='#',
-                timeout=10,
+                #finish_on_key='#',
+                timeout=1,
         ) as gather:
-            gather.say('Press the number, then # to select an entry')
+            gather.say('Press the number to select an entry')
             gather.pause()
             gather.say('1 to browse content')
             gather.pause()
             gather.say('2 to request content')
             gather.pause()
-            gather.say('3 to record content')
+            gather.say('3 to browse requests')
             gather.pause(length=5)
         vr.say('We did not receive your selection')
         vr.redirect('')
