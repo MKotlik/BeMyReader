@@ -48,6 +48,9 @@ def browse_content(request: HttpRequest) -> HttpResponse:
                 gather.say('6, to hear the next three entries')
                 gather.pause()
                 gather.say('9, to return to the main menu')
+                gather.pause()
+                gather.say('Star, to repeat these options')
+                gather.pause()
                 # gather.say('Press 1, 2, or 3 then # to select an entry')
                 # gather.pause()
                 # gather.say('Press 4, then #, to hear the previous three entries')
@@ -63,11 +66,14 @@ def browse_content(request: HttpRequest) -> HttpResponse:
             if not contents:
                 gather.say('No more entries left.')
                 gather.pause()
-                gather.say('Press 4, then #, to hear the previous three entries')
+                gather.say('Press 4, to hear the previous three entries')
                 gather.pause()
-                gather.say('Press 7, then #, to return to the top of the list')
+                gather.say('Press 7, to return to the top of the list')
                 gather.pause()
-                gather.say('Press 9, then #, to return to the main menu')
+                gather.say('Press 9, to return to the main menu')
+                gather.pause()
+                gather.say('Press star, to repeat these options')
+                gather.pause()
 
             # List the contents
             for count, content in enumerate(contents):
@@ -76,18 +82,19 @@ def browse_content(request: HttpRequest) -> HttpResponse:
             
             # Remind user of scrolling options
             gather.pause(length=7)
-            gather.say('Press the number, then # to select an entry')
+            gather.say('Press 1, 2, or 3, to select content to listen to')
             gather.pause()
-            gather.say('1, 2, or 3 to select content to listen to')
+            gather.say('Press 4, to hear the previous three entries')
             gather.pause()
-            gather.say('4 to hear the previous three entries')
-            gather.pause()
-            gather.say('6 to hear the next three entries')
+            gather.say('Press 6, to hear the next three entries')
             if base_index > 0:
                 gather.pause()
-                gather.say('7 to return to the top of the list')
+                gather.say('Press 7, to return to the top of the list')
             gather.pause()
-            gather.say('9, to return to the main menu')
+            gather.say('Press 9, to return to the main menu')
+            gather.pause()
+            gather.say('Press star, to repeat these options')
+            gather.pause()
 
         vr.say('We did not receive your selection')
         vr.redirect('')
@@ -120,6 +127,11 @@ def browse_content(request: HttpRequest) -> HttpResponse:
         # Return to main menu
         elif selected_option == '9':
             vr.redirect(reverse('welcome'))
+            return HttpResponse(str(vr), content_type='text/xml')
+
+        # Repeat options at current position
+        elif selected_option == '*':
+            vr.redirect(reverse('browse-content'))
             return HttpResponse(str(vr), content_type='text/xml')
 
         # Handle invalid option

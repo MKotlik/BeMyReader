@@ -18,6 +18,27 @@ class User(models.Model):
     number = models.CharField("phone number", max_length=15)
 """
 
+# class IVRUser(models.Model):
+#     class Meta:
+#         verbose_name = 'IVR User'
+#         verbose_name_plural = 'IVR Users'
+
+#     # Generate path from user ID
+#     @staticmethod
+#     def user_directory_path(instance, filename):
+#         # file will be uploaded to MEDIA_ROOT/users/user_<id>/filename
+#         return f"users/user{instance."
+
+
+
+#     # Grabbed from Twilio, must be unique, used to find user object
+#     number = models.CharField("phone number", max_length=15, primary_key=True)
+
+#     # Recordings provided by user
+#     name_audio = models.FileField()
+
+
+
 class Title(models.Model):
     class Meta:
         verbose_name = 'Title'
