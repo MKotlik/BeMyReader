@@ -22,11 +22,15 @@ def welcome(request: HttpRequest) -> HttpResponse:
         # TODO - improve this later
         request.session.flush()
 
+        # TODO - remove after testing
+        request.session['CallSid'] = request.POST.get('CallSid', None)
+
         vr = VoiceResponse()
         vr.say('Welcome to Be My Reader')
         with vr.gather(
                 action=reverse('welcome'),
                 #finish_on_key='#',
+                numDigits=1,
                 timeout=1,
         ) as gather:
             gather.say('Press the number to select an entry')

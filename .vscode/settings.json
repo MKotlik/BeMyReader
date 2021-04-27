@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "C:\\Users\\Misha\\Miniconda3\\envs\\twilio-tutorial\\python.exe",
+    "python.autoComplete.extraPaths": ["./app"]
+}

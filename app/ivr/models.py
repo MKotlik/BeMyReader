@@ -29,7 +29,11 @@ class User(models.Model):
 #         # file will be uploaded to MEDIA_ROOT/users/user_<id>/filename
 #         return f"users/user{instance."
 
-
+class RecordingType(models.TextChoices):
+    ACCOUNT_NAME = 'AN'
+    REQUEST_TITLE = 'RT'
+    REQUEST_AUTHOR = 'RA'
+    REQUEST_DETAILS = 'RD'
 
 #     # Grabbed from Twilio, must be unique, used to find user object
 #     number = models.CharField("phone number", max_length=15, primary_key=True)
@@ -37,8 +41,65 @@ class User(models.Model):
 #     # Recordings provided by user
 #     name_audio = models.FileField()
 
+class TempRecording(models.Model):
+    class Meta:
+        verbose_name = 'Twilio Recording in Queue'
+        verbose_name_plural = 'Twilio Recordings in Queue'
+    
+    # ID is automatically generated
+    # Look up by callSid
+    call_sid = models.CharField("CallSid", max_length=34)
+
+    # State whether recording failed
+    failed = models.BooleanField("Recording Failed", default=False)
+
+    # Give source of recording in user flow
+    recording_type = models.CharField("Recording Type", choices=RecordingType.choices, max_length=2, null=False)
+
+    # Provide recording_sid and recording_url (which can be null if call failed)
+    recording_sid = models.CharField("CallSid", max_length=34, blank=True)
+    recording_url = models.URLField("CallSid", max_length=255, blank=True)
+
+    # Record creation time for ordering if multiple recordings with same SID
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Methods
+    def __unicode__(self):
+        return f"TempRecording w/ SID {self.recording_sid} for CallSID {self.call_sid}"
+    # NOTE - consider putting delete call to Twilio API here in .delete method
 
 
+class Request(models.Model):
+    class Meta:
+        verbose_name = 'Request for Content'
+        verbose_name_plural = 'Requests for Content'
+    
+    # Generate path from request ID
+    @staticmethod
+    def request_directory_path(instance, filename):
+        # file will be uploaded to MEDIA_ROOT/requests/<id>/filename
+        return f"users/{instance.id}/{filename}"
+    
+    # ID is automatically generated
+
+    # Whether user has completed creating their request
+    # TODO - test if can store incomplete (unsaved) record in session
+    completed = models.BooleanField("Request Completed", default=False)
+
+    # TODO - add reference to source User
+
+    # Paths to title, author, and details audio files
+    title_file = models.FileField("Title Audio File", upload_to=request_directory_path)
+    author_file = models.FileField("Author Audio File", upload_to=request_directory_path, blank=True)
+    details_file = models.FileField("Details Audio File", upload_to=request_directory_path, blank=True)
+
+    # Record creation and modification time for ordering
+    # TODO - decide whether to use created_at or modified_at
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+
+# TODO - remove after deprecating
 class Title(models.Model):
     class Meta:
         verbose_name = 'Title'

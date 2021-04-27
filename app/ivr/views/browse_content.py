@@ -24,6 +24,7 @@ def browse_content(request: HttpRequest) -> HttpResponse:
         with vr.gather(
                 action=reverse('browse-content'),
                 #finish_on_key='#',
+                numDigits=1,
                 timeout=1,
         ) as gather:
 
