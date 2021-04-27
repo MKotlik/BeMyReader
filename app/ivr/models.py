@@ -29,6 +29,7 @@ class User(models.Model):
 #         # file will be uploaded to MEDIA_ROOT/users/user_<id>/filename
 #         return f"users/user{instance."
 
+
 class RecordingType(models.TextChoices):
     ACCOUNT_NAME = 'AN'
     REQUEST_TITLE = 'RT'
@@ -41,11 +42,12 @@ class RecordingType(models.TextChoices):
 #     # Recordings provided by user
 #     name_audio = models.FileField()
 
+
 class TempRecording(models.Model):
     class Meta:
         verbose_name = 'Twilio Recording in Queue'
         verbose_name_plural = 'Twilio Recordings in Queue'
-    
+
     # ID is automatically generated
     # Look up by callSid
     call_sid = models.CharField("CallSid", max_length=34)
@@ -54,7 +56,9 @@ class TempRecording(models.Model):
     failed = models.BooleanField("Recording Failed", default=False)
 
     # Give source of recording in user flow
-    recording_type = models.CharField("Recording Type", choices=RecordingType.choices, max_length=2, null=False)
+    recording_type = models.CharField(
+        "Recording Type", max_length=2, choices=RecordingType.choices,
+        default=RecordingType.REQUEST_TITLE)
 
     # Provide recording_sid and recording_url (which can be null if call failed)
     recording_sid = models.CharField("CallSid", max_length=34, blank=True)
@@ -73,13 +77,13 @@ class Request(models.Model):
     class Meta:
         verbose_name = 'Request for Content'
         verbose_name_plural = 'Requests for Content'
-    
+
     # Generate path from request ID
     @staticmethod
     def request_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/requests/<id>/filename
         return f"users/{instance.id}/{filename}"
-    
+
     # ID is automatically generated
 
     # Whether user has completed creating their request
@@ -90,8 +94,10 @@ class Request(models.Model):
 
     # Paths to title, author, and details audio files
     title_file = models.FileField("Title Audio File", upload_to=request_directory_path)
-    author_file = models.FileField("Author Audio File", upload_to=request_directory_path, blank=True)
-    details_file = models.FileField("Details Audio File", upload_to=request_directory_path, blank=True)
+    author_file = models.FileField(
+        "Author Audio File", upload_to=request_directory_path, blank=True)
+    details_file = models.FileField(
+        "Details Audio File", upload_to=request_directory_path, blank=True)
 
     # Record creation and modification time for ordering
     # TODO - decide whether to use created_at or modified_at
@@ -112,10 +118,10 @@ class Title(models.Model):
         ('BI', 'Biography'),
         ('RE', 'Reference'),
     ]
-	# user entered
+    # user entered
     name = models.CharField("book title", max_length=50, null=True)
     author = models.CharField("book author", max_length=50, null=True)
     # reader = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     genre = models.CharField("genre", max_length=2, choices=GENRES, null=True)
-	# auto generated
+    # auto generated
     files = models.CharField("file path", max_length=200)

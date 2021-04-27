@@ -1,4 +1,10 @@
 How to run the app:
+
+Set the TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN environment variables to those
+for your Twilio account:
+ex. Powershell: $Env:TWILIO_ACCOUNT_SID = "ABC1234"
+ex. Linux: TWILIO_ACCOUNT_SID='ABC1234'; export TWILIO_ACCOUNT_SID
+
 cd into ivr
 run: python manage.py runserver
 

@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from twilio.twiml.voice_response import VoiceResponse
 from ivr.models import TempRecording, RecordingType, Request
-from ivr.logic.request import del_temp_recording
+from ivr.logic.request import create_request_delete_temp, del_temp_recording
 import os
 
 # TODO - make functions to generate the options for all of these interfaces
@@ -108,14 +108,20 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
     call_sid = request.POST.get('CallSid', None)
     vr = VoiceResponse()
 
-    if selected_option == '1':
-        # TODO - handle downloading url, removing temp from database
-        # TODO - handle proceeding to request details
-        del_temp_recording(call_sid, recording_type=RecordingType.REQUEST_TITLE)
-        vr.say('Request submitted.')
-        vr.pause()
-        vr.say('Returning to main menu')
-        vr.redirect('welcome')
+    if selected_option == '1': # title correct, store and continue
+        # get request object unsaved to database
+        request_wip = create_request_delete_temp(call_sid)
+        print(request_wip)
+        if request_wip is not None:
+            request.session['request_wip'] = request_wip
+            # TODO - handle proceeding to request details
+            vr.say("Great! Now, let's record the author of the work")
+            vr.redirect('request-author')
+        else:
+            vr.say('Apologies, there was an application error')
+            vr.pause()
+            vr.say('Returning to main menu')
+            vr.redirect('welcome')
 
     elif selected_option == '2':  # hear recording again
         vr.redirect('confirm-request-title')
@@ -165,11 +171,67 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def confirm_request(request: HttpRequest) -> HttpResponse:
+def request_author(request: HttpRequest) -> HttpResponse:
+    # NOTE - just testing whether model can be stored in session right now
+    # NOTE - And files used to play back content
+    # TODO - finish implementing request author
+    request_wip = request.session.get('request_wip', None)
     vr = VoiceResponse()
-    vr.say('Would confirm request here')
-    vr.hangup()
+    if request_wip is None:
+        print("MISHA THE REQUEST_WIP IS NONE!!!!")
+        vr.say("Hoooooooow is the request None?!")
+    else:
+        if request_wip.completed is False:
+            vr.say("Request still not completed")
+        else:
+            vr.say("How is the request completed? Whaaaaaaaaat?")
+        
+        vr.say("Trying to play the audio file of the request for testing purposes")
+        vr.play(request_wip.title_file.url)
+        vr.say("We'll do the rest later")
+        vr.hangup()
+
     return HttpResponse(str(vr), content_type='text/xml')
+
+
+# @csrf_exempt
+# def confirm_request_author(request: HttpRequest) -> HttpResponse:
+#     call_sid = request.POST.get('CallSid', None)
+#     request_wip = request.session.get('request_wip', None)
+#     vr = VoiceResponse()
+
+#     temp_title = TempRecording.objects.order_by('created_at').filter(
+#         call_sid=call_sid, recording_type=RecordingType.REQUEST_TITLE).first()
+
+#     # If temp_title not found, redirect to keep waiting, count attempt within session
+#     if not temp_title:
+#         vr.say('Please wait while we process your recording')
+#         vr.pause(length=5)
+#         vr.redirect('')  # redirect back to confirm_request_title
+#         # TODO - count number of tries to confirm title in session (fail and restart after 3)
+
+#     else:
+#         # TODO - add accepting and checking recordingFailed as status
+
+#         # Play recording, asking user to confirm or re-record
+#         vr.say('You recorded')
+#         print(temp_title.recording_url)
+#         vr.play(temp_title.recording_url)  # Construct play verb using recording_url
+
+#         with vr.gather(
+#             action=reverse('confirm-request-title-dig'),
+#             numDigits=1,
+#             timeout=5,
+#         ) as gather:
+#             gather.say('Press 1, to confirm the title is correct and continue.')
+#             gather.say('Press 2, to hear the recording again.')
+#             gather.say('Press 3, to record the title again.')
+#             gather.say('Press 9, to cancel and return to the main menu.')
+#             gather.say('Press star, to repeat these options.')
+#         vr.say('We did not receive your selection')
+#         vr.redirect('')
+
+#     return HttpResponse(str(vr), content_type='text/xml')
 
 
 @csrf_exempt
