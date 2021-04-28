@@ -23,7 +23,7 @@ def welcome(request: HttpRequest) -> HttpResponse:
         if session_call_sid != post_call_sid:
             print("WARNING: POST CallSid not equal to session call_sid")
             request.session.flush()
-    
+
     # Handle session initialization
     request.session['call_sid'] = post_call_sid
     request.session['auth'] = False
@@ -31,8 +31,8 @@ def welcome(request: HttpRequest) -> HttpResponse:
 
     # Present welcome message
     # TODO - improve this message (Ben and/or Tim)!!!
-    vr.say("Welcome to BeMyReader, a free platform to share audio recordings of text for the visually impaired.")
-    
+    vr.say("Welcome to BeMyReader.")
+
     # TODO - might want to bind "learn more" to the help key for consistency
     # -- would then bind log in, register, and guest to 1, 2, 3, respectively
     with vr.gather(
@@ -93,7 +93,7 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
     elif selected_option == '3':  # continue as guest selected
         vr.say('Okay, continuing as a guest')
         vr.redirect(reverse('main'))
-    
+
     elif selected_option == '*':  # repeat selected
         with vr.gather(
                 action=reverse('welcome-dig'),
@@ -121,11 +121,11 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
             gather.say('Or, press star, to repeat these options')
         vr.say('We did not receive your selection')
         vr.redirect(reverse('welcome'))
-    
+
     else:
         vr.say("Sorry, invalid option")
         vr.redirect(reverse('welcome'))
-    
+
     return HttpResponse(str(vr), content_type='text/xml')
 
 
@@ -134,7 +134,7 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
 def learn_more(request: HttpRequest) -> HttpResponse:
     """View describing BeMyReader in greater detail"""
     vr = VoiceResponse()
-    vr.say("Not yet implemented")
+    vr.say("Be my reader is a free platform to share audio recordings of text for the visually impaired.")
     vr.hangup()
     return HttpResponse(str(vr), content_type='text/xml')
 
@@ -146,15 +146,7 @@ def main(request: HttpRequest) -> HttpResponse:
     source_country = request.POST.get('FromCountry', None)
 
     # Handle initial request to welcome
-    # TODO - don't reset all session keys if returning to main menu
     if selected_option is None:
-        # Clear session
-        # TODO - improve this later
-        request.session.flush()
-
-        # TODO - remove after testing
-        request.session['CallSid'] = request.POST.get('CallSid', None)
-
         vr = VoiceResponse()
         vr.say('Main Menu')
         with vr.gather(
@@ -167,7 +159,9 @@ def main(request: HttpRequest) -> HttpResponse:
             gather.pause()
             gather.say('Press 2, to request new content.')
             gather.pause()
-            gather.say('Press 3, to browse requests, or make a recording.')
+            gather.say('Press 3, to browse existing requests')
+            gather.pause()
+            gather.say('Press 9, to go back to the welcome menu and log in.')
             gather.pause()
             gather.say('Press star, to repeat these options.')
             gather.pause(length=5)
@@ -181,7 +175,8 @@ def main(request: HttpRequest) -> HttpResponse:
         option_actions = {'1': 'browse-content',
                         '2': 'request-menu',
                         '3': 'browse-requests',
-                        '*': 'welcome'}
+                        '9': 'welcome',
+                        '*': 'main'}
         if selected_option in option_actions:
             vr.redirect(reverse(option_actions[selected_option]))
             return HttpResponse(str(vr), content_type='text/xml')

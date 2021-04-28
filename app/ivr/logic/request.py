@@ -19,6 +19,7 @@ from twilio.rest import Client
 # Creates Request object, finding latest TempRecording of type Request_Title matching call_sid
 # Deletes TempRecording in same database call (reduce DB operations)
 def create_request_delete_temp(call_sid):
+    print("In create_request_delete_temp")
     temp_title = TempRecording.objects.order_by('created_at').filter(
         call_sid=call_sid, recording_type=RecordingType.REQUEST_TITLE).first()
     
@@ -41,6 +42,7 @@ def create_request_delete_temp(call_sid):
         request.title_file=ContentFile(twilio_data, name="title.wav")
         request.save()
         request_id = request.id
+        print(f"Saved request with id {request_id}")
 
         # Make call to Twilio API to delete the file
         del_remote_recording(temp_title.recording_sid)

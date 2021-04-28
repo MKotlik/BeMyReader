@@ -17,6 +17,8 @@ def request_menu(request: HttpRequest) -> HttpResponse:
     # TODO - move this into a different pre-menu function (decorator)
     # -- as well as splitting menu and digits processing into separate functions
     auth = request.session.get('auth', None)
+    call_sid = request.session.get('call_sid', None)
+    print(f"call_sid value in session (from main): {call_sid}")
     print(f"auth value in request (based on login or registration): {auth}")
     auth = True
     if not auth:

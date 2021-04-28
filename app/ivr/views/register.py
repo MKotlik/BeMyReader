@@ -335,6 +335,7 @@ def register_pin_confirm(request: HttpRequest) -> HttpResponse:
     """View for confirming user's pin (& handling no pin entry)"""
     vr = VoiceResponse()
     entered_pin = request.POST.get('Digits', None)
+    print(f"register pin: {entered_pin}")
 
     if not entered_pin:
         vr.say("We did not receive a pin.") 

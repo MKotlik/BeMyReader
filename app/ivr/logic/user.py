@@ -61,7 +61,9 @@ def hash_IVRUser_pin(raw_pin):
 
 
 def register_IVRUser_final(user_id, raw_pin):
+    print(f"register final on id: {user_id}")
     user = IVRUser.objects.get(id=user_id)
+    print(f"registering this user object: {user}")
     user.hashed_pin = make_password(raw_pin)
     user.register_complete = True
     user.save()
