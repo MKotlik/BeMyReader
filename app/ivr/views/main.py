@@ -26,24 +26,23 @@ def welcome(request: HttpRequest) -> HttpResponse:
         request.session['CallSid'] = request.POST.get('CallSid', None)
 
         vr = VoiceResponse()
-        vr.say('Welcome to Be My Reader')
+        vr.say('Welcome to Be My Reader.')
+        vr.pause()
         with vr.gather(
                 action=reverse('welcome'),
                 #finish_on_key='#',
                 numDigits=1,
                 timeout=1,
         ) as gather:
-            gather.say('Press the number to select an entry')
+            gather.say('Press 1 to browse existing content.')
             gather.pause()
-            gather.say('1 to browse content')
+            gather.say('Press 2 to request new content.')
             gather.pause()
-            gather.say('2 to request content')
+            gather.say('Press 3 to browse requests, or make a recording.')
             gather.pause()
-            gather.say('3 to browse requests')
-            gather.pause()
-            gather.say('Star, to repeat these options')
+            gather.say('Press star, to repeat these options.')
             gather.pause(length=5)
-        vr.say('We did not receive your selection')
+        vr.say('We did not receive your selection.')
         vr.redirect('')
         return HttpResponse(str(vr), content_type='text/xml')
 
