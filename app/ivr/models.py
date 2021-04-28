@@ -24,19 +24,21 @@ class IVRUser(models.Model):
     # -- ID is currently not auto-generated, must be given by users
     id = models.CharField("ID", max_length=6, primary_key=True)
 
-    # TODO - check if this just returns a hex encoded password
-    # -- or if it's a $ delimited string with salt as well?
-    hashed_pass = models.CharField("Hashed Password", max_length=128)
+    # TODO - store salt as well
+    hashed_pin = models.CharField("Hashed Pin", max_length=128)
+
+    # Whether completed registration, or in progress
+    register_complete = models.BooleanField("Completed Registration?", default=False)
 
     focus = models.CharField(
         "User Focus", max_length=2, choices=UserFocus.choices,
-        default=UserFocus.CLIENT)
+        default=UserFocus.CLIENT, blank=True)
 
     # Phone Number user LAST called from
-    last_number = models.CharField("Phone Number", max_length=15)
+    latest_number = models.CharField("Latest Phone Number", max_length=15)
 
     # Country of user's LAST phone number (based on Twilio info)
-    country = models.CharField("Country", max_length=40)
+    latest_country = models.CharField("Latest Country", max_length=40)
 
     # Interface language
     # TODO - internationalize our application and limit to a number of Choices

@@ -9,6 +9,7 @@
     "call_sid": <CallSid from request.POST.get("CallSid")>,
     "phone_number": <Phone Number from request.POST.get("From")>,
     "user_id": <ID of current IVRUser if logged in, else None>,
+    "auth": <bool whether user is authorized to use rest of system>,
     "browse_content": {
         "base_index": <user's current base position in content list>
     }

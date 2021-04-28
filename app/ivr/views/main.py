@@ -2,7 +2,6 @@ from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from twilio.twiml.voice_response import VoiceResponse
-from ivr.models import *
 import os
 
 
@@ -27,11 +26,12 @@ def welcome(request: HttpRequest) -> HttpResponse:
     
     # Handle session initialization
     request.session['call_sid'] = post_call_sid
+    request.session['auth'] = False
     request.session['phone_number'] = post_phone_number
 
     # Present welcome message
     # TODO - improve this message (Ben and/or Tim)!!!
-    vr.say("Welcome to BeMyReader, a free platform to share audio recordings of texts, for the visually impaired.")
+    vr.say("Welcome to BeMyReader, a free platform to share audio recordings of text for the visually impaired.")
     
     # TODO - might want to bind "learn more" to the help key for consistency
     # -- would then bind log in, register, and guest to 1, 2, 3, respectively
@@ -115,78 +115,6 @@ def learn_more(request: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-# TODO - Michael, finish implementing
-def login_id(request: HttpRequest) -> HttpResponse:
-    """View for logging in to an existing account"""
-    vr = VoiceResponse()
-    vr.say("Not yet implemented")
-    vr.hangup()
-    return HttpResponse(str(vr), content_type='text/xml')
-
-
-@csrf_exempt
-def register_start(request: HttpRequest) -> HttpResponse:
-    """View for logging in to an existing account"""
-    vr = VoiceResponse()
-    vr.say('Creating a BeMyReader account will allow you to request content, '
-            'record content, and more.')
-    vr.pause()
-    vr.say('However, you can also browse and listen to existing content without an account')
-    vr.pause()
-    with vr.gather(
-                action=reverse('register-start-dig'),
-                #finish_on_key='#',
-                numDigits=1,
-                timeout=5,
-        ) as gather:
-            gather.say('How would you like to proceed?')
-            gather.pause()
-            gather.say('Press 1, to continue creating an account')
-            gather.pause()
-            gather.say('Press 9, to return to the welcome menu')
-            gather.pause()
-            gather.say('Or, press star, to repeat these options')
-    vr.say('We did not receive your selection')
-    vr.redirect(reverse('register-start'))
-
-
-@csrf_exempt
-def register_start_dig(request: HttpRequest) -> HttpResponse:
-    """Processing digit entry for register_start view"""
-    vr = VoiceResponse()
-    selected_option = request.POST.get('Digits', None)
-
-    if selected_option == '1':  # proceed with registration
-        vr.redirect(reverse('register-focus'))
-    
-    elif selected_option == '9':  # return to welcome menu
-        vr.redirect(reverse('welcome'))
-
-    elif selected_option == '*':  # repeat selected
-        with vr.gather(
-                action=reverse('register-start-dig'),
-                #finish_on_key='#',
-                numDigits=1,
-                timeout=5,
-        ) as gather:
-            gather.say('How would you like to proceed?')
-            gather.pause()
-            gather.say('Press 1, to continue creating an account')
-            gather.pause()
-            gather.say('Press 9, to return to the welcome menu')
-            gather.pause()
-            gather.say('Or, press star, to repeat these options')
-        vr.say('We did not receive your selection')
-        vr.redirect(reverse('register-start'))
-    
-    else:
-        vr.say("Sorry, invalid option")
-        vr.redirect(reverse('register-start'))
-    
-    return HttpResponse(str(vr), content_type='text/xml')
-
-
-@csrf_exempt
 def main(request: HttpRequest) -> HttpResponse:
     selected_option = request.POST.get('Digits', None)
     source_number = request.POST.get('From', None)
@@ -203,7 +131,7 @@ def main(request: HttpRequest) -> HttpResponse:
         request.session['CallSid'] = request.POST.get('CallSid', None)
 
         vr = VoiceResponse()
-        vr.say('Welcome to Be My Reader')
+        vr.say('Main Menu')
         with vr.gather(
                 action=reverse('welcome'),
                 #finish_on_key='#',
@@ -212,11 +140,11 @@ def main(request: HttpRequest) -> HttpResponse:
         ) as gather:
             gather.say('Press the number to select an entry')
             gather.pause()
-            gather.say('1 to browse content')
+            gather.say('Press 1, to browse content')
             gather.pause()
-            gather.say('2 to request content')
+            gather.say('Press 2, to request content')
             gather.pause()
-            gather.say('3 to browse requests')
+            gather.say('Press 3, to browse requests')
             gather.pause()
             gather.say('Star, to repeat these options')
             gather.pause(length=5)
