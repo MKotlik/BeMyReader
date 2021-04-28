@@ -30,17 +30,17 @@ class User(models.Model):
 #         return f"users/user{instance."
 
 
-class RecordingType(models.TextChoices):
-    ACCOUNT_NAME = 'AN'
-    REQUEST_TITLE = 'RT'
-    REQUEST_AUTHOR = 'RA'
-    REQUEST_DETAILS = 'RD'
-
 #     # Grabbed from Twilio, must be unique, used to find user object
 #     number = models.CharField("phone number", max_length=15, primary_key=True)
 
 #     # Recordings provided by user
 #     name_audio = models.FileField()
+
+class RecordingType(models.TextChoices):
+    ACCOUNT_NAME = 'AN'
+    REQUEST_TITLE = 'RT'
+    REQUEST_AUTHOR = 'RA'
+    REQUEST_DETAILS = 'RD'
 
 
 class TempRecording(models.Model):
@@ -78,13 +78,12 @@ class Request(models.Model):
         verbose_name = 'Request for Content'
         verbose_name_plural = 'Requests for Content'
 
-    # Generate path from request ID
-    @staticmethod
-    def request_directory_path(instance, filename):
-        # file will be uploaded to MEDIA_ROOT/requests/<id>/filename
-        return f"users/{instance.id}/{filename}"
-
     # ID is automatically generated
+
+    # Generate file path from request ID
+    def request_directory_path(self, filename):
+        # file will be uploaded to MEDIA_ROOT/requests/<id>/filename
+        return f"requests/{self.id}/{filename}"
 
     # Whether user has completed creating their request
     # TODO - test if can store incomplete (unsaved) record in session
@@ -93,7 +92,7 @@ class Request(models.Model):
     # TODO - add reference to source User
 
     # Paths to title, author, and details audio files
-    title_file = models.FileField("Title Audio File", upload_to=request_directory_path)
+    title_file = models.FileField("Title Audio File", upload_to=request_directory_path, blank=True)
     author_file = models.FileField(
         "Author Audio File", upload_to=request_directory_path, blank=True)
     details_file = models.FileField(

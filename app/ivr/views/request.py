@@ -82,7 +82,6 @@ def confirm_request_title(request: HttpRequest) -> HttpResponse:
 
         # Play recording, asking user to confirm or re-record
         vr.say('You recorded')
-        print(temp_title.recording_url)
         vr.play(temp_title.recording_url)  # Construct play verb using recording_url
 
         with vr.gather(
@@ -109,12 +108,11 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
     vr = VoiceResponse()
 
     if selected_option == '1': # title correct, store and continue
-        # get request object unsaved to database
-        request_wip = create_request_delete_temp(call_sid)
-        print(request_wip)
-        if request_wip is not None:
-            request.session['request_wip'] = request_wip
-            # TODO - handle proceeding to request details
+        # Get id of Request object saved in database
+        request_id = create_request_delete_temp(call_sid)
+        print(request_id)
+        if request_id is not None:
+            request.session['request_id'] = request_id
             vr.say("Great! Now, let's record the author of the work")
             vr.redirect('request-author')
         else:
@@ -175,12 +173,13 @@ def request_author(request: HttpRequest) -> HttpResponse:
     # NOTE - just testing whether model can be stored in session right now
     # NOTE - And files used to play back content
     # TODO - finish implementing request author
-    request_wip = request.session.get('request_wip', None)
+    request_id = request.session.get('request_id', None)
     vr = VoiceResponse()
-    if request_wip is None:
-        print("MISHA THE REQUEST_WIP IS NONE!!!!")
+    if request_id is None:
+        print("MISHA THE REQUEST_ID IS NONE!!!!")
         vr.say("Hoooooooow is the request None?!")
     else:
+        request_wip = Request.objects.get(id=request_id)
         if request_wip.completed is False:
             vr.say("Request still not completed")
         else:
@@ -242,10 +241,6 @@ def process_request_title(request: HttpRequest) -> HttpResponse:
 
     recording_status = request.POST.get('RecordingStatus', None)
 
-    # Remove after testing
-    print(f"Status: {recording_status}")
-    print(f"For call SID: {call_sid} at {recording_url}")
-
     # TODO - test recording status being failed
 
     # Create TempRecording in DB
@@ -255,6 +250,5 @@ def process_request_title(request: HttpRequest) -> HttpResponse:
                                    recording_sid=recording_sid,
                                    recording_url=recording_url)
     temp_recording.save()
-    print(f"Save temp_recording w/ id {temp_recording.id}")
 
     return HttpResponse("", content_type='text/xml')

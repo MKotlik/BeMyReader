@@ -10,3 +10,9 @@ run: python manage.py runserver
 
 How to start ngrok:
 run: ngrok http 8000
+
+To reset the database fully:
+Delete the db.sqlite3 file
+Delete all migration files
+run: python manage.py makemigrations
+run: python manage.py migrate

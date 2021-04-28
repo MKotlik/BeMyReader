@@ -14,6 +14,8 @@ from twilio.rest import Client
 # TODO - use this function to delete any temporary recordings associated with CallSID during call cleanup
 # -- except for content recordings, which should be stored in drafts?
 
+# TODO - add function to delete any incomplete Request objects from database after end of call (or end of day?)
+
 # Creates Request object, finding latest TempRecording of type Request_Title matching call_sid
 # Deletes TempRecording in same database call (reduce DB operations)
 def create_request_delete_temp(call_sid):
@@ -25,9 +27,7 @@ def create_request_delete_temp(call_sid):
         print(f"Error: no temporary title recording found for call_sid {call_sid}")
         return None
     
-    # TODO - Try returning Request object to view w/o saving. If not, save & return ID
-    # -- might be an issue with audio file data disappearing if model not immediately saved
-    request_wip = None
+    request_id = None
 
     # TODO - handle error with file download (report back to view, not current print statement)
     try:
@@ -36,7 +36,11 @@ def create_request_delete_temp(call_sid):
         twilio_data = urlopen(temp_title.recording_url).read()
         print(type(twilio_data))
 
-        request_wip = Request(completed=False, title_file=ContentFile(twilio_data, name="title.wav"))
+        # Create and save Request
+        # TODO - check if I need to save first then with audio file to get correct directory
+        request = Request(completed=False, title_file=ContentFile(twilio_data, name="title.wav"))
+        request.save()
+        request_id = request.id
 
         # Make call to Twilio API to delete the file
         del_remote_recording(temp_title.recording_sid)
@@ -48,7 +52,7 @@ def create_request_delete_temp(call_sid):
         print(f"Error while trying to download title audio for call_sid {call_sid}")
         print(e)
     
-    return request_wip
+    return request_id
 
 
 # Delete recording with given sid from Twilio account, return success as bool
