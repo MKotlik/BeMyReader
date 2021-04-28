@@ -144,6 +144,8 @@ def main(request: HttpRequest) -> HttpResponse:
             gather.pause()
             gather.say('Press 3, to browse requests, or make a recording.')
             gather.pause()
+            gather.say('Press 9, to go back to the welcome menu and log in.')
+            gather.pause()
             gather.say('Press star, to repeat these options.')
             gather.pause(length=5)
         vr.say('We did not receive your selection.')
@@ -156,6 +158,7 @@ def main(request: HttpRequest) -> HttpResponse:
         option_actions = {'1': 'browse-content',
                         '2': 'request-menu',
                         '3': 'browse-requests',
+                        '9': 'welcome',
                         '*': 'main'}
         if selected_option in option_actions:
             vr.redirect(reverse(option_actions[selected_option]))
