@@ -35,7 +35,7 @@ def request_menu(request: HttpRequest) -> HttpResponse:
         if selected_option == '1':
             vr.redirect(reverse('request-title'))
         elif selected_option == '9':
-            vr.redirect(reverse('welcome'))
+            vr.redirect(reverse('main'))
         else:
             vr.say('Invalid Entry  ')
             vr.redirect(reverse('request-menu'))
@@ -124,7 +124,7 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
             vr.say('Apologies, there was an application error')
             vr.pause()
             vr.say('Returning to main menu')
-            vr.redirect(reverse('welcome'))
+            vr.redirect(reverse('main'))
 
     elif selected_option == '2':  # hear recording again
         vr.redirect(reverse('confirm-request-title'))
@@ -139,7 +139,7 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
         vr.say('Request cancelled')
         vr.pause()
         vr.say('Returning to main menu')
-        vr.redirect(reverse('welcome'))
+        vr.redirect(reverse('main'))
 
     elif selected_option == '*':  # Handle repeat
         with vr.gather(
