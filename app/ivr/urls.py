@@ -16,6 +16,9 @@ urlpatterns = [
     path('learn-more', learn_more, name='learn_more'),
 
     path('login-id', login_id, name='login-id'),
+    path('login-id-check', login_id_check, name='login-id-check'),
+    path('login-pin', login_pin, name='login-pin'),
+    path('login-pin-check', login_pin_check, name='login-pin-check'),
 
     path('register-start', register_start, name='register-start'),
     path('register-start-dig', register_start_dig, name='register-start-dig'),

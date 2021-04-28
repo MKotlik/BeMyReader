@@ -14,31 +14,59 @@ def request_menu(request: HttpRequest) -> HttpResponse:
     selected_option = request.POST.get('Digits', None)
     vr = VoiceResponse()
 
-    # Initial entry to request menu
-    if selected_option is None:
-        with vr.gather(
-            action=reverse('request-menu'),
-            numDigits=1,
-            timeout=5,
-        ) as gather:
-            gather.say('Welcome to the Make Request Menu.')
-            gather.pause()
-            gather.say(
-                'Press 1, to make a request for new content.')
-            gather.pause()
-            gather.say('Press 9, to return to the main menu.')
-        vr.say('We did not receive your selection')
-        vr.redirect('')
-
-    # Process key entry from request menu
-    else:
-        if selected_option == '1':
-            vr.redirect(reverse('request-title'))
-        elif selected_option == '9':
-            vr.redirect(reverse('welcome'))
+    # TODO - move this into a different pre-menu function (decorator)
+    # -- as well as splitting menu and digits processing into separate functions
+    auth = request.session.get('auth', None)
+    print(f"auth value in request (based on login or registration): {auth}")
+    auth = True
+    if not auth:
+        if selected_option is None:
+            vr.say("You may only make a request after logging in")
+            with vr.gather(
+                action=reverse('request-menu'),
+                numDigits=1,
+                timeout=5,
+            ) as gather:
+                gather.say('Press 1, to go to the log-in menu.')
+                gather.pause()
+                gather.say('Press 9, to return to the main menu.')
+            vr.say('We did not receive your selection')
+            vr.redirect('main')
         else:
-            vr.say('Invalid Entry  ')
-            vr.redirect(reverse('request-menu'))
+            if selected_option == '1':
+                vr.redirect(reverse('login-id'))
+            elif selected_option == '9':
+                vr.redirect(reverse('main'))
+            else:
+                vr.say('Sorry, invalid option  ')
+                vr.redirect(reverse(''))
+
+    else:  # If authenticated
+        # Initial entry to request menu
+        if selected_option is None:
+            with vr.gather(
+                action=reverse('request-menu'),
+                numDigits=1,
+                timeout=5,
+            ) as gather:
+                gather.say('Welcome to the Make Request Menu.')
+                gather.pause()
+                gather.say(
+                    'Press 1, to make a request for new content.')
+                gather.pause()
+                gather.say('Press 9, to return to the main menu.')
+            vr.say('We did not receive your selection')
+            vr.redirect('')
+
+        # Process key entry from request menu
+        else:
+            if selected_option == '1':
+                vr.redirect(reverse('request-title'))
+            elif selected_option == '9':
+                vr.redirect(reverse('main'))
+            else:
+                vr.say('Invalid Entry  ')
+                vr.redirect(reverse('request-menu'))
 
     return HttpResponse(str(vr), content_type='text/xml')
 
@@ -46,11 +74,11 @@ def request_menu(request: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def request_title(request: HttpRequest) -> HttpResponse:
     vr = VoiceResponse()
+    vr.say('''At the tone, please say the title, author, and any other relevant details of the
+        work you are requesting.''')
     vr.say('''Please limit your request to 20 seconds or less, and press any
             key once you are finished speaking.''')
     vr.pause()
-    vr.say('''At the tone, please say the title, author, and any details of the
-            work you are requesting.''')
     # TODO - determine if to keep the below msg
     vr.pause(length=2)
     vr.record(
@@ -75,7 +103,7 @@ def confirm_request_title(request: HttpRequest) -> HttpResponse:
     # If temp_title not found, redirect to keep waiting, count attempt within session
     if not temp_title:
         vr.say('Please wait while we process your recording')
-        vr.pause(length=5)
+        vr.pause(length=2)
         vr.redirect('')  # redirect back to confirm_request_title
         # TODO - count number of tries to confirm title in session (fail and restart after 3)
 
@@ -115,16 +143,21 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
     if selected_option == '1': # title correct, store and continue
         # Get id of Request object saved in database
         request_id = create_request_delete_temp(call_sid)
-        print(request_id)
+
         if request_id is not None:
-            request.session['request_id'] = request_id
-            vr.say("Great! Now, let's record the author of the work")
-            vr.redirect(reverse('request-author'))
+            # TODO - after demo, split into author and details again
+            # request.session['request_id'] = request_id
+            # vr.say("Great! Now, let's record the author of the work")
+            # vr.redirect(reverse('request-author'))
+
+            vr.say("Your request has been submitted")
+            vr.say("Returning to the main menu")
+            vr.redirect('main')
         else:
             vr.say('Apologies, there was an application error')
             vr.pause()
             vr.say('Returning to main menu')
-            vr.redirect(reverse('welcome'))
+            vr.redirect(reverse('main'))
 
     elif selected_option == '2':  # hear recording again
         vr.redirect(reverse('confirm-request-title'))
@@ -139,7 +172,7 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
         vr.say('Request cancelled')
         vr.pause()
         vr.say('Returning to main menu')
-        vr.redirect(reverse('welcome'))
+        vr.redirect(reverse('main'))
 
     elif selected_option == '*':  # Handle repeat
         with vr.gather(
@@ -157,25 +190,10 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
             gather.pause()
             gather.say('Press star, to repeat these options.')
         vr.say('We did not receive your selection')
-        vr.redirect('')
+        vr.redirect('confirm-request-title')
 
     else:  # Handle unrecognized option
-        vr.say('Invalid entry ')
-        with vr.gather(
-            action=reverse('confirm-request-title-dig'),
-            numDigits=1,
-            timeout=5,
-        ) as gather:
-            gather.say('Press 1, to confirm the request is correct, and continue.')
-            gather.pause()
-            gather.say('Press 2, to hear your request again.')
-            gather.pause()
-            gather.say('Press 3, to rerecord your request.')
-            gather.pause()
-            gather.say('Press 9, to cancel and return to the main menu.')
-            gather.pause()
-            gather.say('Press star, to repeat these options.')
-        vr.say('We did not receive your selection')
+        vr.say('Sorry, invalid option ')
         vr.redirect('')
 
     return HttpResponse(str(vr), content_type='text/xml')

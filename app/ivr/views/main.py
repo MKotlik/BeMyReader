@@ -43,13 +43,21 @@ def welcome(request: HttpRequest) -> HttpResponse:
         ) as gather:
             gather.say('Please select one of the following options')
             gather.pause()
-            gather.say('Press 1, to learn more about this service')
+            # TODO - return learn about service
+            # gather.say('Press 1, to learn more about this service')
+            # gather.pause()
+            # gather.say('Press 2, to log in')
+            # gather.pause()
+            # gather.say('Press 3, to register')
+            # gather.pause()
+            # gather.say('Press 4, to continue as a guest')
+            # gather.pause()
+            # gather.say('Or, press star, to repeat these options')
+            gather.say('Press 1, to log in')
             gather.pause()
-            gather.say('Press 2, to log in')
+            gather.say('Press 2, to register')
             gather.pause()
-            gather.say('Press 3, to register')
-            gather.pause()
-            gather.say('Press 4, to continue as a guest')
+            gather.say('Press 3, to continue as a guest')
             gather.pause()
             gather.say('Or, press star, to repeat these options')
     vr.say('We did not receive your selection')
@@ -63,16 +71,26 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
     vr = VoiceResponse()
     selected_option = request.POST.get('Digits', None)
 
-    if selected_option == '1':  # learn more selected
-        vr.redirect(reverse('learn-more'))
+    # if selected_option == '1':  # learn more selected
+    #     vr.redirect(reverse('learn-more'))
     
-    elif selected_option == '2':  # log in selected
+    # elif selected_option == '2':  # log in selected
+    #     vr.redirect(reverse('login-id'))
+
+    # elif selected_option == '3':  # register selected
+    #     vr.redirect(reverse('register-start'))
+    
+    # elif selected_option == '4':  # continue as guest selected
+    #     vr.say('Okay, continuing as a guest')
+    #     vr.redirect(reverse('main'))
+
+    if selected_option == '1':  # log in selected
         vr.redirect(reverse('login-id'))
 
-    elif selected_option == '3':  # register selected
+    elif selected_option == '2':  # register selected
         vr.redirect(reverse('register-start'))
     
-    elif selected_option == '4':  # continue as guest selected
+    elif selected_option == '3':  # continue as guest selected
         vr.say('Okay, continuing as a guest')
         vr.redirect(reverse('main'))
     
@@ -85,13 +103,20 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
         ) as gather:
             gather.say('Please select one of the following options')
             gather.pause()
-            gather.say('Press 1, to learn more about this service')
+            # gather.say('Press 1, to learn more about this service')
+            # gather.pause()
+            # gather.say('Press 2, to log in')
+            # gather.pause()
+            # gather.say('Press 3, to register')
+            # gather.pause()
+            # gather.say('Press 4, to continue as a guest')
+            # gather.pause()
+            # gather.say('Or, press star, to repeat these options')
+            gather.say('Press 1, to log in')
             gather.pause()
-            gather.say('Press 2, to log in')
+            gather.say('Press 2, to register')
             gather.pause()
-            gather.say('Press 3, to register')
-            gather.pause()
-            gather.say('Press 4, to continue as a guest')
+            gather.say('Press 3, to continue as a guest')
             gather.pause()
             gather.say('Or, press star, to repeat these options')
         vr.say('We did not receive your selection')
@@ -133,14 +158,14 @@ def main(request: HttpRequest) -> HttpResponse:
         vr = VoiceResponse()
         vr.say('Main Menu')
         with vr.gather(
-                action=reverse('welcome'),
+                action=reverse('main'),
                 #finish_on_key='#',
                 numDigits=1,
                 timeout=1,
         ) as gather:
             gather.say('Press 1, to browse, and listen to existing content.')
             gather.pause()
-            gather.say('Press 2, to request new, content.')
+            gather.say('Press 2, to request new content.')
             gather.pause()
             gather.say('Press 3, to browse requests, or make a recording.')
             gather.pause()
@@ -161,5 +186,5 @@ def main(request: HttpRequest) -> HttpResponse:
             vr.redirect(reverse(option_actions[selected_option]))
             return HttpResponse(str(vr), content_type='text/xml')
         vr.say('Invalid Entry  ')
-        vr.redirect(reverse('welcome'))
+        vr.redirect(reverse('main'))
         return HttpResponse(str(vr), content_type='text/xml')

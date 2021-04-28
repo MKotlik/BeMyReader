@@ -144,7 +144,7 @@ def register_name(request: HttpRequest) -> HttpResponse:
     """View for recording the name audio for a user account"""
     vr = VoiceResponse()
 
-    vr.say("Now we will need to record a name, to identify you to other users on BeMyReader.")
+    vr.say("We will need to record a name to identify you to other users on BeMyReader.")
     vr.pause()
     vr.say("At the tone, please say your full name, or a nickname, or a clever username")
     vr.pause()
@@ -363,6 +363,9 @@ def register_pin_confirm_dig(request: HttpRequest) -> HttpResponse:
     user_id = request.session.get('user_id', None)
     first_pin = request.session.get('first_pin', None)
 
+    print(f"first pin length: {len(first_pin)}")
+    print(f"confirmed pin: {entered_pin}")
+
     if not entered_pin:
         vr.say("We did not receive a pin.") 
         vr.redirect(reverse('register-pin-confirm'))
@@ -372,6 +375,7 @@ def register_pin_confirm_dig(request: HttpRequest) -> HttpResponse:
         if first_pin == entered_pin:
             register_IVRUser_final(user_id, entered_pin)
             request.session['auth'] = True
+            print(f"auth value: {request.session.get('auth', None)}")
             del request.session["first_pin"]
 
             vr.say("You have finished registering.")
