@@ -34,11 +34,11 @@ def welcome(request: HttpRequest) -> HttpResponse:
                 numDigits=1,
                 timeout=1,
         ) as gather:
-            gather.say('Press 1 to browse existing content.')
+            gather.say('Press 1, to browse existing content.')
             gather.pause()
-            gather.say('Press 2 to request new content.')
+            gather.say('Press 2, to request new, content.')
             gather.pause()
-            gather.say('Press 3 to browse requests, or make a recording.')
+            gather.say('Press 3, to browse requests, or make a recording.')
             gather.pause()
             gather.say('Press star, to repeat these options.')
             gather.pause(length=5)

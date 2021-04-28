@@ -21,9 +21,11 @@ def request_menu(request: HttpRequest) -> HttpResponse:
             numDigits=1,
             timeout=5,
         ) as gather:
-            gather.say('Welcome to the Make Request Menu')
+            gather.say('Welcome to the Make Request Menu.')
+            gather.pause()
             gather.say(
-                'Press 1, if you would like to record a request to transcribe some text.')
+                'Press 1, to make a request for new content.')
+            gather.pause()
             gather.say('Press 9, to return to the main menu.')
         vr.say('We did not receive your selection')
         vr.redirect('')
@@ -44,12 +46,12 @@ def request_menu(request: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def request_title(request: HttpRequest) -> HttpResponse:
     vr = VoiceResponse()
-    vr.say('At the tone, please say the name, and edition or year of the work you would'
-           ' like to have read.')
+    vr.say('''Please limit your request to 20 seconds or less, and press any
+            key once you are finished speaking.''')
     vr.pause()
+    vr.say('''At the tone, please say the title, author, and any details of the
+            work you are requesting.''')
     # TODO - determine if to keep the below msg
-    vr.say('Please keep your recording 20 seconds or less')
-    vr.say('And press any key once you are finished.')
     vr.pause(length=2)
     vr.record(
         timeout=10,
@@ -184,7 +186,7 @@ def request_author(request: HttpRequest) -> HttpResponse:
             vr.say("Request still not completed")
         else:
             vr.say("How is the request completed? Whaaaaaaaaat?")
-        
+
         vr.say("Trying to play the audio file of the request for testing purposes")
         vr.play(request_wip.title_file.url)
         vr.say("We'll do the rest later")
