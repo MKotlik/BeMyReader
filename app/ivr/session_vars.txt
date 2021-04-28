@@ -1,0 +1,15 @@
+# Listing of session variables (for consistency) and session structure
+# All variables are stored in request.session
+# Representing as a dictionary
+
+# Top-level, call-specific variables have keys as is
+# Interface specific variables are stored in a corresponding dict
+
+{
+    "call_sid": <CallSid from request.POST.get("CallSid")>,
+    "phone_number": <Phone Number from request.POST.get("From")>,
+    "user_id": <ID of current IVRUser if logged in, else None>,
+    "browse_content": {
+        "base_index": <user's current base position in content list>
+    }
+}
