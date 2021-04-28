@@ -48,10 +48,9 @@ def browse_requests(request: HttpRequest) -> HttpResponse:
 
             # Say the menu options if top of list
             if base_index == 0:
-                gather.say('Press the number to select an entry')
+                gather.say('Press a number to navigate the list')
                 gather.pause()
                 for count, request in enumerate(requests):
-                    gather.say('Press '+ str(count + 1) +' to listen to ')
                     gather.play(request.title_file.url)
                     gather.pause()
                 gather.say('Press 4, to hear the previous three entries')
@@ -84,7 +83,6 @@ def browse_requests(request: HttpRequest) -> HttpResponse:
             # Remind user of scrolling options
             gather.pause(length=7)
             for count, request in enumerate(requests):
-                gather.say('Press '+ str(count + 1) +' to listen to ')
                 gather.play(request.title_file.url)
                 gather.pause()
             gather.say('Press 4, to hear the previous three entries')
@@ -115,16 +113,6 @@ def browse_requests(request: HttpRequest) -> HttpResponse:
                 request.session['browse_requests_base_index'] = 0
 
             vr.redirect(reverse('browse-requests'))
-            return HttpResponse(str(vr), content_type='text/xml')
-
-        # Play a selected entry
-        elif selected_option in ['1', '2', '3']:
-            requests = requests[base_index: base_index + 3]
-            request = requests[int(selected_option) - 1]
-            request.session['listen_name'] = request.name
-            request.session['listen_id'] = request.id
-            request.session['listen_path'] = request.files
-            vr.redirect(reverse('listen'))
             return HttpResponse(str(vr), content_type='text/xml')
 
         # Return to main menu
