@@ -37,8 +37,8 @@ def create_request_delete_temp(call_sid):
         print(type(twilio_data))
 
         # Create and save Request
-        # TODO - check if I need to save first then with audio file to get correct directory
-        request = Request(completed=False, title_file=ContentFile(twilio_data, name="title.wav"))
+        request = Request.objects.create(completed=False)
+        request.title_file=ContentFile(twilio_data, name="title.wav")
         request.save()
         request_id = request.id
 

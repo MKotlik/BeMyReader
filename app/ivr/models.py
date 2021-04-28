@@ -6,35 +6,61 @@ from django.db import models
 from django.conf import settings
 
 
-"""
-class User(models.Model):
+# NOTE - consider moving controller logic into Models, out of logic module
+
+
+# Whether a user is mainly client or volunteer
+class UserFocus(models.TextChoices):
+    CLIENT = 'CL'
+    VOLUNTEER = 'VO'
+
+
+class IVRUser(models.Model):
     class Meta:
-        verbose_name = 'user'
-        verbose_name_plural = 'users'
-	# user entered
-    name = models.CharField("name", max_length=30, null=True)
-    passcode = models.CharField("passcode", max_length=6, null=True)
-	# grab from twilio any time someone connects
-    number = models.CharField("phone number", max_length=15)
-"""
+        verbose_name = 'IVR User'
+        verbose_name_plural = 'IVR Users'
 
-# class IVRUser(models.Model):
-#     class Meta:
-#         verbose_name = 'IVR User'
-#         verbose_name_plural = 'IVR Users'
+    # TODO - figure out better way of getting each users a unique, memorable ID
+    # -- ID is currently not auto-generated, must be given by users
+    id = models.CharField("ID", max_length=6, primary_key=True)
 
-#     # Generate path from user ID
-#     @staticmethod
-#     def user_directory_path(instance, filename):
-#         # file will be uploaded to MEDIA_ROOT/users/user_<id>/filename
-#         return f"users/user{instance."
+    # TODO - store salt as well
+    hashed_pin = models.CharField("Hashed Pin", max_length=128)
 
+    # Whether completed registration, or in progress
+    register_complete = models.BooleanField("Completed Registration?", default=False)
 
-#     # Grabbed from Twilio, must be unique, used to find user object
-#     number = models.CharField("phone number", max_length=15, primary_key=True)
+    focus = models.CharField(
+        "User Focus", max_length=2, choices=UserFocus.choices,
+        default=UserFocus.CLIENT, blank=True)
 
-#     # Recordings provided by user
-#     name_audio = models.FileField()
+    # Phone Number user LAST called from
+    latest_number = models.CharField("Latest Phone Number", max_length=15)
+
+    # Country of user's LAST phone number (based on Twilio info)
+    latest_country = models.CharField("Latest Country", max_length=40)
+
+    # Interface language
+    # TODO - internationalize our application and limit to a number of Choices
+    # TODO - ask user to set/update language based on phone number country
+    language = models.CharField("Interface Langauge", max_length=5, default="en")
+
+    # Account creation time and last login time (automatic)
+    created_at = models.DateTimeField(auto_now_add=True)
+    login_at = models.DateTimeField(auto_now=True)
+
+    # Generate file path from user ID
+    def user_directory_path(self, filename):
+        # file will be uploaded to MEDIA_ROOT/users/<id>/filename
+        return f"users/{self.id}/{filename}"
+
+    # User's name/username recorded as voice
+    name_file = models.FileField("Name Audio File", upload_to=user_directory_path, blank=True)
+
+    # Additional methods
+    def __str__(self):
+        return f"IVRUser w/ ID {self.id}"
+
 
 class RecordingType(models.TextChoices):
     ACCOUNT_NAME = 'AN'
@@ -68,9 +94,8 @@ class TempRecording(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     # Methods
-    def __unicode__(self):
+    def __str__(self):
         return f"TempRecording w/ SID {self.recording_sid} for CallSID {self.call_sid}"
-    # NOTE - consider putting delete call to Twilio API here in .delete method
 
 
 class Request(models.Model):
@@ -102,6 +127,10 @@ class Request(models.Model):
     # TODO - decide whether to use created_at or modified_at
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+
+    # Additional methods
+    def __str__(self):
+        return f"Request w/ ID {self.id}"
 
 
 # TODO - remove after deprecating

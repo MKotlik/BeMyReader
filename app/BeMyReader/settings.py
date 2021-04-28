@@ -15,7 +15,7 @@ import os
 
 
 # Current Ngrok URL
-CUR_URL = "https://bc2619453d56.ngrok.io"
+CUR_URL = "https://b8e97c89933a.ngrok.io"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

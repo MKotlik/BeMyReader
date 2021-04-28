@@ -108,7 +108,6 @@ def confirm_request_title(request: HttpRequest) -> HttpResponse:
 
 @csrf_exempt
 def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
-    # TODO - handle no option being selected
     selected_option = request.POST.get('Digits', None)
     call_sid = request.POST.get('CallSid', None)
     vr = VoiceResponse()
@@ -120,27 +119,27 @@ def confirm_request_title_dig(request: HttpRequest) -> HttpResponse:
         if request_id is not None:
             request.session['request_id'] = request_id
             vr.say("Great! Now, let's record the author of the work")
-            vr.redirect('request-author')
+            vr.redirect(reverse('request-author'))
         else:
             vr.say('Apologies, there was an application error')
             vr.pause()
             vr.say('Returning to main menu')
-            vr.redirect('welcome')
+            vr.redirect(reverse('welcome'))
 
     elif selected_option == '2':  # hear recording again
-        vr.redirect('confirm-request-title')
+        vr.redirect(reverse('confirm-request-title'))
 
     elif selected_option == '3':  # redo the recording
         del_temp_recording(call_sid, recording_type=RecordingType.REQUEST_TITLE)
         vr.say("Let's record the title again")
-        vr.redirect('request-title')
+        vr.redirect(reverse('request-title'))
 
     elif selected_option == '9':  # Cancel and return to main menu
         del_temp_recording(call_sid, recording_type=RecordingType.REQUEST_TITLE)
         vr.say('Request cancelled')
         vr.pause()
         vr.say('Returning to main menu')
-        vr.redirect('welcome')
+        vr.redirect(reverse('welcome'))
 
     elif selected_option == '*':  # Handle repeat
         with vr.gather(
