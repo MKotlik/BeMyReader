@@ -121,7 +121,7 @@ def browse_content(request: HttpRequest) -> HttpResponse:
 
         # Return to main menu
         elif selected_option == '9':
-            vr.redirect(reverse('welcome'))
+            vr.redirect(reverse('main'))
             return HttpResponse(str(vr), content_type='text/xml')
 
         # Repeat options at current position
