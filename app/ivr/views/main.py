@@ -23,7 +23,7 @@ def welcome(request: HttpRequest) -> HttpResponse:
         if session_call_sid != post_call_sid:
             print("WARNING: POST CallSid not equal to session call_sid")
             request.session.flush()
-    
+
     # Handle session initialization
     request.session['call_sid'] = post_call_sid
     request.session['auth'] = False
@@ -31,8 +31,8 @@ def welcome(request: HttpRequest) -> HttpResponse:
 
     # Present welcome message
     # TODO - improve this message (Ben and/or Tim)!!!
-    vr.say("Welcome to BeMyReader, a free platform to share audio recordings of text for the visually impaired.")
-    
+    vr.say("Welcome to BeMyReader.")
+
     # TODO - might want to bind "learn more" to the help key for consistency
     # -- would then bind log in, register, and guest to 1, 2, 3, respectively
     with vr.gather(
@@ -65,17 +65,17 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
 
     if selected_option == '1':  # learn more selected
         vr.redirect(reverse('learn-more'))
-    
+
     elif selected_option == '2':  # log in selected
         vr.redirect(reverse('login-id'))
 
     elif selected_option == '3':  # register selected
         vr.redirect(reverse('register-start'))
-    
+
     elif selected_option == '4':  # continue as guest selected
         vr.say('Okay, continuing as a guest')
         vr.redirect(reverse('main'))
-    
+
     elif selected_option == '*':  # repeat selected
         with vr.gather(
                 action=reverse('welcome-dig'),
@@ -96,11 +96,11 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
             gather.say('Or, press star, to repeat these options')
         vr.say('We did not receive your selection')
         vr.redirect(reverse('welcome'))
-    
+
     else:
         vr.say("Sorry, invalid option")
         vr.redirect(reverse('welcome'))
-    
+
     return HttpResponse(str(vr), content_type='text/xml')
 
 
@@ -109,7 +109,7 @@ def welcome_dig(request: HttpRequest) -> HttpResponse:
 def learn_more(request: HttpRequest) -> HttpResponse:
     """View describing BeMyReader in greater detail"""
     vr = VoiceResponse()
-    vr.say("Not yet implemented")
+    vr.say("Be my reader is a free platform to share audio recordings of text for the visually impaired.")
     vr.hangup()
     return HttpResponse(str(vr), content_type='text/xml')
 
@@ -133,7 +133,7 @@ def main(request: HttpRequest) -> HttpResponse:
         vr = VoiceResponse()
         vr.say('Main Menu')
         with vr.gather(
-                action=reverse('welcome'),
+                action=reverse('main'),
                 #finish_on_key='#',
                 numDigits=1,
                 timeout=1,
@@ -156,10 +156,10 @@ def main(request: HttpRequest) -> HttpResponse:
         option_actions = {'1': 'browse-content',
                         '2': 'request-menu',
                         '3': 'browse-requests',
-                        '*': 'welcome'}
+                        '*': 'main'}
         if selected_option in option_actions:
             vr.redirect(reverse(option_actions[selected_option]))
             return HttpResponse(str(vr), content_type='text/xml')
         vr.say('Invalid Entry  ')
-        vr.redirect(reverse('welcome'))
+        vr.redirect(reverse('main'))
         return HttpResponse(str(vr), content_type='text/xml')
