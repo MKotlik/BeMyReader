@@ -34,7 +34,7 @@ def welcome(request: HttpRequest) -> HttpResponse:
                 numDigits=1,
                 timeout=1,
         ) as gather:
-            gather.say('Press 1, to browse existing content.')
+            gather.say('Press 1, to browse, and listen to existing content.')
             gather.pause()
             gather.say('Press 2, to request new, content.')
             gather.pause()

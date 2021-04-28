@@ -91,10 +91,14 @@ def confirm_request_title(request: HttpRequest) -> HttpResponse:
             numDigits=1,
             timeout=5,
         ) as gather:
-            gather.say('Press 1, to confirm the title is correct and continue.')
-            gather.say('Press 2, to hear the recording again.')
-            gather.say('Press 3, to record the title again.')
+            gather.say('Press 1, to confirm the request is correct, and continue.')
+            gather.pause()
+            gather.say('Press 2, to hear your request again.')
+            gather.pause()
+            gather.say('Press 3, to rerecord your request.')
+            gather.pause()
             gather.say('Press 9, to cancel and return to the main menu.')
+            gather.pause()
             gather.say('Press star, to repeat these options.')
         vr.say('We did not receive your selection')
         vr.redirect('')
