@@ -4,6 +4,7 @@ from django.urls import path
 from ivr.views.main import *
 from ivr.views.login import *
 from ivr.views.register import *
+from ivr.views.record import *
 from ivr.views.browse_content import browse_content
 from ivr.views.browse_requests import browse_requests
 from ivr.views.listen import listen
@@ -45,7 +46,14 @@ urlpatterns = [
     path('confirm-request-title', confirm_request_title, name='confirm-request-title'),
     path('confirm-request-title-dig', confirm_request_title_dig,
          name='confirm-request-title-dig'),
-   path('request-author', request_author, name='request-author'),
+    path('request-author', request_author, name='request-author'),
     path('process-request-title', process_request_title, name='process-request-title'),
+
+    path('record-menu', record_menu, name='record-menu'),
+    path('record-title', record_title, name='record-title'),
+    path('confirm-recording', confirm_recording, name='confirm-recording'),
+    path('confirm-recording-dig', confirm_recording_dig,
+         name='confirm-record-title-dig'),
+    path('process-record-title', process_record_title, name='process-record-title'),
 
 ]
