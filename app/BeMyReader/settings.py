@@ -14,8 +14,8 @@ from pathlib import Path
 import os
 
 
-# Current Ngrok URL
-CUR_URL = "https://8b5407309ee5.ngrok.io"
+# Current Server URL/Address
+CUR_URL = "167.172.147.159"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     '.ngrok.io',
     'localhost',
     '127.0.0.1',
+    '167.172.147.159',
 ]
 
 # Application definition
