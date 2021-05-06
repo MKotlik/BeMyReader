@@ -40,11 +40,10 @@ def browse_content(request: HttpRequest) -> HttpResponse:
 
             # Say the menu options if top of list
             if base_index == 0:
-                gather.say('Press the number to select an entry')
-                gather.pause()
                 for count, content in enumerate(contents):
                     gather.say('Press '+ str(count + 1) +
-                                ' to listen to ' + content.name)
+                                ' to listen to ')
+                    gather.play(content.files.split(',')[0])
                     gather.pause()
                 gather.say('Press 4, to hear the previous three entries')
                 gather.pause()
@@ -77,7 +76,8 @@ def browse_content(request: HttpRequest) -> HttpResponse:
             gather.pause(length=7)
             for count, content in enumerate(contents):
                 gather.say('Press '+ str(count + 1) +
-                            ' to listen to ' + content.name)
+                            ' to listen to ')
+                gather.play(content.files.split(',')[0])
                 gather.pause()
             gather.say('Press 4, to hear the previous three entries')
             gather.pause()
@@ -113,7 +113,8 @@ def browse_content(request: HttpRequest) -> HttpResponse:
         elif selected_option in ['1', '2', '3']:
             contents = contents[base_index: base_index + 3]
             content = contents[int(selected_option) - 1]
-            request.session['listen_name'] = content.name
+            # we won't have string names for recordings in time
+            # request.session['listen_name'] = content.name
             request.session['listen_id'] = content.id
             request.session['listen_path'] = content.files
             vr.redirect(reverse('listen'))

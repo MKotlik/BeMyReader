@@ -1,3 +1,4 @@
+"""doc"""
 from django.db import models
 
 # Create your models here.
@@ -111,7 +112,7 @@ class Request(models.Model):
     def request_directory_path(self, filename):
         # file will be uploaded to MEDIA_ROOT/requests/<id>/filename
         return f"requests/{self.id}/{filename}"
-    
+
     # ForeignKey to the user that created the request
     # TODO - figure out how to delete with outstanding request if user deletes (cancel request? assign request to default user and notify volunteer?)
     # TODO - make null=False and blank=False after confirming everyone has reset their databases
