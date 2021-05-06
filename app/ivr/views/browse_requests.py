@@ -8,20 +8,10 @@ import os
 
 @csrf_exempt
 def browse_requests(request: HttpRequest) -> HttpResponse:
+    """View and digit entry processing for the Browse Requests (Request List) Interface"""
     vr = VoiceResponse()
-    vr.say('Welcome to the Browse Requests Menu')
-    vr.say('Sorry, under construction')
-    vr.redirect(reverse('main'))
-    return HttpResponse(str(vr), content_type='text/xml')
-
-@csrf_exempt
-def browse_requests(request: HttpRequest) -> HttpResponse:
     selected_option = request.POST.get('Digits', None)
     base_index = request.session.get('browse_requests_base_index', 0)
-    vr = VoiceResponse()
-
-    # print(selected_option)
-    # print(base_index)
 
     # TODO - handle invalid entry here, to avoid unnecessary database load
     requests = (Request.objects.order_by('id').filter(id__isnull=False))

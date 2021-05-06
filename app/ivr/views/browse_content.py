@@ -8,12 +8,10 @@ import os
 
 @csrf_exempt
 def browse_content(request: HttpRequest) -> HttpResponse:
+    """View and digit entry processing for the Browse Content (Content List) Interface"""
+    vr = VoiceResponse()
     selected_option = request.POST.get('Digits', None)
     base_index = request.session.get('browse_content_base_index', 0)
-    vr = VoiceResponse()
-
-    # print(selected_option)
-    # print(base_index)
 
     # TODO - handle invalid entry here, to avoid unnecessary database load
     contents = (Title.objects.order_by('id').filter(id__isnull=False))
