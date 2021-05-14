@@ -60,21 +60,26 @@ def hash_IVRUser_pin(raw_pin):
     return make_password(raw_pin, salt)
 
 
+# TODO - revert after fixing authentication issue
 def register_IVRUser_final(user_id, raw_pin):
     print(f"register final on id: {user_id}")
     user = IVRUser.objects.get(id=user_id)
     print(f"registering this user object: {user}")
-    user.hashed_pin = make_password(raw_pin)
+    # user.hashed_pin = make_password(raw_pin)
+    user.raw_pin = raw_pin
     user.register_complete = True
     user.save()
 
 
+# TODO - revert after fixing authentication issue
 def check_IVRUser_auth(user_id, raw_pin):
     auth = False
     user = IVRUser.objects.filter(id=user_id).first()
+    print(f"check_auth user {user}")
     if user is not None:
-        hashed_pin = hash_IVRUser_pin(raw_pin)
-        auth = user.hashed_pin == hashed_pin
+        # hashed_pin = hash_IVRUser_pin(raw_pin)
+        # auth = (user.hashed_pin == hashed_pin)
+        auth = (user.raw_pin == raw_pin)
     return auth
 
 

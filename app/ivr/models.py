@@ -25,7 +25,9 @@ class IVRUser(models.Model):
     id = models.CharField("ID", max_length=6, primary_key=True)
 
     # TODO - store salt as well
-    hashed_pin = models.CharField("Hashed Pin", max_length=128)
+    # TODO - revert to hashed_pin after figuring out issue
+    # hashed_pin = models.CharField("Hashed Pin", max_length=128)
+    raw_pin = models.CharField("Raw Pin", max_length=8)
 
     # Whether completed registration, or in progress
     register_complete = models.BooleanField("Completed Registration?", default=False)

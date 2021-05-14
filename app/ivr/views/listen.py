@@ -31,4 +31,5 @@ def listen(request: HttpRequest) -> HttpResponse:
     vr.pause(1)
     vr.say('Please wait a moment while the file is loaded')
     vr.play(file_url)
+    vr.redirect('')
     return HttpResponse(str(vr), content_type='text/xml')

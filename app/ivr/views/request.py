@@ -20,7 +20,7 @@ def request_menu(request: HttpRequest) -> HttpResponse:
     call_sid = request.session.get('call_sid', None)
     print(f"call_sid value in session (from main): {call_sid}")
     print(f"auth value in request (based on login or registration): {auth}")
-    auth = True
+    # auth = True
     if not auth:
         if selected_option is None:
             vr.say("You may only make a request after logging in")
